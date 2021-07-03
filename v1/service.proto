@@ -132,6 +132,11 @@ message CreateTicketResponse {
   string message = 2;
 }
 
+message ListTicketsResponse {
+  repeated Ticket ticket = 1;
+  string message = 2;
+}
+
 service Api {
   rpc CreateAccount(CreateAccountRequest) returns (CreateAccountResponse) {
     option (google.api.http) = {
@@ -162,4 +167,9 @@ service Api {
       body : "*"
     };
   };
+  rpc ListTickets(google.protobuf.Empty) returns (ListTicketsResponse) {
+    option (google.api.http) = {
+      get : "/v1/tickets",
+    };
+  }
 }

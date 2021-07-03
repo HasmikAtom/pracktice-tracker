@@ -49,6 +49,26 @@
       }
     },
     "/v1/tickets": {
+      "get": {
+        "operationId": "Api_ListTickets",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListTicketsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "Api"
+        ]
+      },
       "post": {
         "operationId": "Api_CreateTicket",
         "responses": {
@@ -404,6 +424,20 @@
       "properties": {
         "user": {
           "$ref": "#/definitions/v1User"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1ListTicketsResponse": {
+      "type": "object",
+      "properties": {
+        "ticket": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1Ticket"
+          }
         },
         "message": {
           "type": "string"

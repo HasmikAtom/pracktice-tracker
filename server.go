@@ -8,6 +8,7 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type Database struct {
@@ -47,5 +48,9 @@ func (s *ApiServer) DeleteAccount(ctx context.Context, req *api.DeleteAccountReq
 }
 
 func (s *ApiServer) CreateTicket(ctx context.Context, req *api.CreateTicketRequest) (*api.CreateTicketResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "not implemented")
+}
+
+func (s *ApiServer) ListTickets(ctx context.Context, req *emptypb.Empty) (*api.ListTicketsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "not implemented")
 }

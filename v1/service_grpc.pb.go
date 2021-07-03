@@ -24,6 +24,7 @@ type ApiClient interface {
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
 	DeleteAccount(ctx context.Context, in *DeleteAccountRequest, opts ...grpc.CallOption) (*DeleteAccountResponse, error)
 	CreateTicket(ctx context.Context, in *CreateTicketRequest, opts ...grpc.CallOption) (*CreateTicketResponse, error)
+	ListTickets(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListTicketsResponse, error)
 }
 
 type apiClient struct {
@@ -79,6 +80,15 @@ func (c *apiClient) CreateTicket(ctx context.Context, in *CreateTicketRequest, o
 	return out, nil
 }
 
+func (c *apiClient) ListTickets(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListTicketsResponse, error) {
+	out := new(ListTicketsResponse)
+	err := c.cc.Invoke(ctx, "/tracker.v1.Api/ListTickets", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiServer is the server API for Api service.
 // All implementations should embed UnimplementedApiServer
 // for forward compatibility
@@ -88,6 +98,7 @@ type ApiServer interface {
 	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
 	DeleteAccount(context.Context, *DeleteAccountRequest) (*DeleteAccountResponse, error)
 	CreateTicket(context.Context, *CreateTicketRequest) (*CreateTicketResponse, error)
+	ListTickets(context.Context, *emptypb.Empty) (*ListTicketsResponse, error)
 }
 
 // UnimplementedApiServer should be embedded to have forward compatible implementations.
@@ -108,6 +119,9 @@ func (UnimplementedApiServer) DeleteAccount(context.Context, *DeleteAccountReque
 }
 func (UnimplementedApiServer) CreateTicket(context.Context, *CreateTicketRequest) (*CreateTicketResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTicket not implemented")
+}
+func (UnimplementedApiServer) ListTickets(context.Context, *emptypb.Empty) (*ListTicketsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListTickets not implemented")
 }
 
 // UnsafeApiServer may be embedded to opt out of forward compatibility for this service.
@@ -211,6 +225,24 @@ func _Api_CreateTicket_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Api_ListTickets_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServer).ListTickets(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/tracker.v1.Api/ListTickets",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServer).ListTickets(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Api_ServiceDesc is the grpc.ServiceDesc for Api service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -237,6 +269,10 @@ var Api_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateTicket",
 			Handler:    _Api_CreateTicket_Handler,
+		},
+		{
+			MethodName: "ListTickets",
+			Handler:    _Api_ListTickets_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
