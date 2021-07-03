@@ -41,3 +41,7 @@ func (s *ApiServer) GetUser(ctx context.Context, req *empty.Empty) (*api.GetUser
 func (s *ApiServer) UpdateUser(ctx context.Context, req *api.UpdateUserRequest) (*api.UpdateUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "not implemented")
 }
+
+func (s *ApiServer) DeleteAccount(ctx context.Context, req *api.DeleteAccountRequest) (*api.DeleteAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "not implemented")
+}

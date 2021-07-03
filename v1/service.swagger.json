@@ -71,6 +71,40 @@
       }
     },
     "/v1/users/{userId}": {
+      "delete": {
+        "operationId": "Api_DeleteAccount",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteAccountResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "perm",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "Api"
+        ]
+      },
       "put": {
         "operationId": "Api_UpdateUser",
         "responses": {
@@ -253,6 +287,14 @@
         "user": {
           "$ref": "#/definitions/v1User"
         },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1DeleteAccountResponse": {
+      "type": "object",
+      "properties": {
         "message": {
           "type": "string"
         }
