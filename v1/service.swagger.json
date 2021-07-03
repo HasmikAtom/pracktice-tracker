@@ -100,6 +100,76 @@
         ]
       }
     },
+    "/v1/tickets/filter": {
+      "get": {
+        "operationId": "Api_FilterTickets",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1FilterTicketsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "statusInfo",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "languages",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "technologies",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "ytChannels",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "sources",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          }
+        ],
+        "tags": [
+          "Api"
+        ]
+      }
+    },
     "/v1/users": {
       "get": {
         "operationId": "Api_GetUser",
@@ -414,6 +484,20 @@
     "v1DeleteAccountResponse": {
       "type": "object",
       "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1FilterTicketsResponse": {
+      "type": "object",
+      "properties": {
+        "ticket": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1Ticket"
+          }
+        },
         "message": {
           "type": "string"
         }

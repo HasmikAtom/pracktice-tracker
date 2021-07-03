@@ -137,6 +137,19 @@ message ListTicketsResponse {
   string message = 2;
 }
 
+message FilterTicketsRequest {
+  string status_info = 1;
+  repeated string languages = 2;
+  repeated string technologies = 3;
+  repeated string yt_channels = 4;
+  repeated string sources = 5;
+}
+
+message FilterTicketsResponse {
+  repeated Ticket ticket = 1;
+  string message = 2;
+}
+
 service Api {
   rpc CreateAccount(CreateAccountRequest) returns (CreateAccountResponse) {
     option (google.api.http) = {
@@ -170,6 +183,11 @@ service Api {
   rpc ListTickets(google.protobuf.Empty) returns (ListTicketsResponse) {
     option (google.api.http) = {
       get : "/v1/tickets",
+    };
+  }
+  rpc FilterTickets(FilterTicketsRequest) returns (FilterTicketsResponse) {
+    option (google.api.http) = {
+      get : "/v1/tickets/filter",
     };
   }
 }

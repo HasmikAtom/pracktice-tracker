@@ -54,3 +54,7 @@ func (s *ApiServer) CreateTicket(ctx context.Context, req *api.CreateTicketReque
 func (s *ApiServer) ListTickets(ctx context.Context, req *emptypb.Empty) (*api.ListTicketsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "not implemented")
 }
+
+func (s *ApiServer) FilterTickets(ctx context.Context, req *api.FilterTicketsRequest) (*api.FilterTicketsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "not implemented")
+}
