@@ -9,6 +9,8 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"google.golang.org/protobuf/encoding/protojson"
+
+	api "github.com/HasmikAtom/tracker/v1"
 )
 
 var (
@@ -38,6 +40,7 @@ func main() {
 	if err := conn.Ping(ctx); err != nil {
 		log.Fatal("error connecting to the database: ", err)
 	}
+	db := newDatabase(conn)
 
 	mux := runtime.NewServeMux(
 		runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
@@ -55,6 +58,11 @@ func main() {
 			}
 		}),
 	)
+
+	server := newApiServer(db)
+	if err := api.RegisterApiHandlerServer(ctx, mux, server); err != nil {
+		log.Fatal(err)
+	}
 
 	rootMux := http.NewServeMux()
 	rootMux.Handle("/", mux)

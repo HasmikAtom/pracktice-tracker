@@ -1,0 +1,68 @@
+syntax = "proto3";
+option go_package = "github.com/HasmikAtom/tracker/api/v1;api";
+package tracker.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info : {title : "Tracker API";
+version : "1.0";
+}
+, security_definitions : {
+security : {
+key:
+  "AuthToken";
+value : {
+type:
+  TYPE_API_KEY;
+in:
+  IN_HEADER;
+name:
+  "X-Atom-User";
+}
+}
+}
+}
+;
+
+message User {
+  string id = 1;
+  string email = 2;
+  string user_type = 3;
+  bool email_verified = 4;
+  string first_name = 5;
+  string last_name = 6;
+  string auth_method = 7;
+  string reset_password_token = 8;
+  string email_verify_token = 9;
+  string reset_password_token_expires = 10;
+  google.protobuf.Timestamp activated_at = 11;
+  google.protobuf.Timestamp created_at = 12;
+  google.protobuf.Timestamp deleted_at = 13;
+}
+
+message CreateAccountRequest {
+  string email = 1;
+  string user_type = 2;
+  string password = 3;
+  string first_name = 4;
+  string last_name = 5;
+  string auth_method = 6;
+}
+
+message CreateAccountResponse {
+  User user = 1;
+  string message = 2;
+}
+
+service Api {
+  rpc CreateAccount(CreateAccountRequest) returns (CreateAccountResponse) {
+    option (google.api.http) = {
+      post : "/v1/register",
+      body : "*"
+    };
+  };
+}

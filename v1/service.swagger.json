@@ -1,0 +1,172 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Tracker API",
+    "version": "1.0"
+  },
+  "tags": [
+    {
+      "name": "Api"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/register": {
+      "post": {
+        "operationId": "Api_CreateAccount",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateAccountResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateAccountRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Api"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "typeUrl": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1CreateAccountRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "userType": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "authMethod": {
+          "type": "string"
+        }
+      }
+    },
+    "v1CreateAccountResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/v1User"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "userType": {
+          "type": "string"
+        },
+        "emailVerified": {
+          "type": "boolean"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "authMethod": {
+          "type": "string"
+        },
+        "resetPasswordToken": {
+          "type": "string"
+        },
+        "emailVerifyToken": {
+          "type": "string"
+        },
+        "resetPasswordTokenExpires": {
+          "type": "string"
+        },
+        "activatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deletedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "AuthToken": {
+      "type": "apiKey",
+      "name": "X-Atom-User",
+      "in": "header"
+    }
+  }
+}
