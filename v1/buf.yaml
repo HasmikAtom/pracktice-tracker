@@ -1,0 +1,12 @@
+version: v1beta1
+# the name is required for buf to know what registry to use to resolve the
+# dependencies below, however this doesn't mean that our code will be pushed in
+# any repository.
+# https://bufbuild.slack.com/archives/CRZ680FUH/p1616172405059400
+name: buf.build/practice/practice-api
+deps:
+  - buf.build/beta/googleapis
+  - buf.build/grpc-ecosystem/grpc-gateway
+build:
+  roots:
+    - .
