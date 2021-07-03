@@ -37,3 +37,7 @@ func (s *ApiServer) CreateAccount(ctx context.Context, req *api.CreateAccountReq
 func (s *ApiServer) GetUser(ctx context.Context, req *empty.Empty) (*api.GetUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "not implemented")
 }
+
+func (s *ApiServer) UpdateUser(ctx context.Context, req *api.UpdateUserRequest) (*api.UpdateUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "not implemented")
+}

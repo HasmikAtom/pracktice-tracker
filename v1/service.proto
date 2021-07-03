@@ -3,9 +3,11 @@ option go_package = "github.com/HasmikAtom/tracker/api/v1;api";
 package tracker.v1;
 
 import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/protobuf/field_mask.proto";
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info : {title : "Tracker API";
@@ -63,6 +65,30 @@ message GetUserResponse {
   string message = 2;
 }
 
+message UpdateUserRequest {
+  message UpdateUserResquestBody {
+    string user_type = 1;
+    string password = 2;
+    string first_name = 3;
+    string last_name = 4;
+    string auth_method = 5;
+    string reset_password_token = 6;
+    string email_verify_token = 7;
+    string reset_password_token_expires = 8;
+    bool email_verified = 9;
+    google.protobuf.Timestamp activated_at = 10;
+  }
+  string user_id = 1;
+  UpdateUserResquestBody body = 2;
+  google.protobuf.FieldMask update_mask = 3
+      [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
+message UpdateUserResponse {
+  User user = 1;
+  string message = 2;
+}
+
 service Api {
   rpc CreateAccount(CreateAccountRequest) returns (CreateAccountResponse) {
     option (google.api.http) = {
@@ -73,6 +99,13 @@ service Api {
   rpc GetUser(google.protobuf.Empty) returns (GetUserResponse) {
     option (google.api.http) = {
       get : "/v1/users",
+    };
+  };
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {
+    option (google.api.http) = {
+      put : "/v1/users/{user_id}",
+      body : "body"
+      additional_bindings {patch : "/v1/users/{user_id}" body : "body"}
     };
   };
 }
