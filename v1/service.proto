@@ -58,11 +58,21 @@ message CreateAccountResponse {
   string message = 2;
 }
 
+message GetUserResponse {
+  User user = 1;
+  string message = 2;
+}
+
 service Api {
   rpc CreateAccount(CreateAccountRequest) returns (CreateAccountResponse) {
     option (google.api.http) = {
       post : "/v1/register",
       body : "*"
+    };
+  };
+  rpc GetUser(google.protobuf.Empty) returns (GetUserResponse) {
+    option (google.api.http) = {
+      get : "/v1/users",
     };
   };
 }

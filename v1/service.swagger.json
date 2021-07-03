@@ -47,6 +47,28 @@
           "Api"
         ]
       }
+    },
+    "/v1/users": {
+      "get": {
+        "operationId": "Api_GetUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "Api"
+        ]
+      }
     }
   },
   "definitions": {
@@ -104,6 +126,17 @@
       }
     },
     "v1CreateAccountResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/v1User"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1GetUserResponse": {
       "type": "object",
       "properties": {
         "user": {
