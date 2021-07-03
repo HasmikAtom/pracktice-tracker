@@ -45,3 +45,7 @@ func (s *ApiServer) UpdateUser(ctx context.Context, req *api.UpdateUserRequest) 
 func (s *ApiServer) DeleteAccount(ctx context.Context, req *api.DeleteAccountRequest) (*api.DeleteAccountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "not implemented")
 }
+
+func (s *ApiServer) CreateTicket(ctx context.Context, req *api.CreateTicketRequest) (*api.CreateTicketResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "not implemented")
+}
