@@ -2,14 +2,36 @@ package main
 
 import (
 	"context"
+	"log"
+	"net"
+	"net/http"
 
 	api "github.com/HasmikAtom/tracker/v1"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/soheilhy/cmux"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
+
+func serveHTTP(l net.Listener, rootMux *http.ServeMux) {
+	s := &http.Server{
+		Handler: rootMux,
+	}
+	if err := s.Serve(l); err != cmux.ErrListenerClosed {
+		log.Fatalf("Error in HTTP server: %s", err)
+	}
+}
+
+func serveGRPC(l net.Listener, server *ApiServer) {
+	grpcs := grpc.NewServer()
+	api.RegisterApiServer(grpcs, server)
+	if err := grpcs.Serve(l); err != cmux.ErrListenerClosed {
+		log.Fatalf("Error in GRPC server: %s", err)
+	}
+}
 
 type Database struct {
 	conn *pgxpool.Pool

@@ -3,11 +3,14 @@ package main
 import (
 	"context"
 	"log"
+	"net"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/soheilhy/cmux"
 	"google.golang.org/protobuf/encoding/protojson"
 
 	api "github.com/HasmikAtom/tracker/v1"
@@ -59,18 +62,18 @@ func main() {
 		}),
 	)
 
-	server := newApiServer(db)
-	if err := api.RegisterApiHandlerServer(ctx, mux, server); err != nil {
+	grpcServer := newApiServer(db)
+	if err := api.RegisterApiHandlerServer(ctx, mux, grpcServer); err != nil {
 		log.Fatal(err)
 	}
 
-	rootMux := http.NewServeMux()
-	rootMux.Handle("/", mux)
+	httpServer := http.NewServeMux()
+	httpServer.Handle("/", mux)
 
 	fs := http.FileServer(http.Dir(swaggerFolderPath))
-	rootMux.Handle("/swaggerui/", http.StripPrefix("/swaggerui/", fs))
+	httpServer.Handle("/swaggerui/", http.StripPrefix("/swaggerui/", fs))
 
-	rootMux.HandleFunc("/swagger.json", func(w http.ResponseWriter, r *http.Request) {
+	httpServer.HandleFunc("/swagger.json", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, swaggerFilePath)
 	})
 
@@ -79,6 +82,21 @@ func main() {
 		port = "8000"
 	}
 
-	log.Println("running on port: " + port)
-	log.Fatal(http.ListenAndServe(":"+port, rootMux))
+	l, err := net.Listen("tcp", ":"+port)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	m := cmux.New(l)
+
+	grpcl := m.MatchWithWriters(
+		cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc"),
+	)
+	httpl := m.Match(cmux.HTTP1Fast())
+	go serveGRPC(grpcl, grpcServer)
+	go serveHTTP(httpl, httpServer)
+
+	if err := m.Serve(); !strings.Contains(err.Error(), "use of closed network connection") {
+		panic(err)
+	}
 }
