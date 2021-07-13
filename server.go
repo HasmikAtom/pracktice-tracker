@@ -25,8 +25,10 @@ func serveHTTP(l net.Listener, rootMux *http.ServeMux) {
 	}
 }
 
-func serveGRPC(l net.Listener, server *ApiServer) {
-	grpcs := grpc.NewServer()
+func serveGRPC(l net.Listener, server *ApiServer, grpcAuthN func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error)) {
+	grpcs := grpc.NewServer(
+		grpc.UnaryInterceptor(grpcAuthN),
+	)
 	api.RegisterApiServer(grpcs, server)
 	if err := grpcs.Serve(l); err != cmux.ErrListenerClosed {
 		log.Fatalf("Error in GRPC server: %s", err)

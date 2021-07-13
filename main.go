@@ -67,8 +67,13 @@ func main() {
 		log.Fatal(err)
 	}
 
+	grpcAuthN := grpcAuthNFunc(ctx)
+	httpAuthN := httpAuthNFunc(ctx)
+
 	httpServer := http.NewServeMux()
-	httpServer.Handle("/", mux)
+	httpServer.Handle("/", httpAuthN(mux))
+	httpServer.Handle("/v1/login", mux)
+	httpServer.Handle("/v1/register", mux)
 
 	fs := http.FileServer(http.Dir(swaggerFolderPath))
 	httpServer.Handle("/swaggerui/", http.StripPrefix("/swaggerui/", fs))
@@ -93,8 +98,11 @@ func main() {
 		cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc"),
 	)
 	httpl := m.Match(cmux.HTTP1Fast())
-	go serveGRPC(grpcl, grpcServer)
+
+	go serveGRPC(grpcl, grpcServer, grpcAuthN)
+	log.Println("started grpc server on port ", port)
 	go serveHTTP(httpl, httpServer)
+	log.Println("started http server on port ", port)
 
 	if err := m.Serve(); !strings.Contains(err.Error(), "use of closed network connection") {
 		panic(err)
