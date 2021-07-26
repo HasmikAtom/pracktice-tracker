@@ -241,4 +241,9 @@ service Api {
       additional_bindings {patch : "/v1/tickets/{ticket_id}" body : "body"}
     };
   }
+  rpc DeleteTicket(DeleteTicketRequest) returns (DeleteTicketResponse) {
+    option (google.api.http) = {
+      delete : "/v1/tickets/{ticket_id}",
+    };
+  }
 }

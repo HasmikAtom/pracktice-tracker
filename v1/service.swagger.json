@@ -199,6 +199,40 @@
           "Api"
         ]
       },
+      "delete": {
+        "operationId": "Api_DeleteTicket",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteTicketResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "ticketId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "perm",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "Api"
+        ]
+      },
       "put": {
         "operationId": "Api_UpdateTicket",
         "responses": {
@@ -652,6 +686,14 @@
       }
     },
     "v1DeleteAccountResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1DeleteTicketResponse": {
       "type": "object",
       "properties": {
         "message": {

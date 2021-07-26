@@ -66,3 +66,7 @@ func (s *ApiServer) GetTicket(ctx context.Context, req *api.GetTicketRequest) (*
 func (s *ApiServer) UpdateTicket(ctx context.Context, req *api.UpdateTicketRequest) (*api.UpdateTicketResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "not implemented")
 }
+
+func (s *ApiServer) DeleteTicket(ctx context.Context, req *api.DeleteTicketRequest) (*api.DeleteTicketResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "not implemented")
+}
