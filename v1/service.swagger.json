@@ -170,6 +170,36 @@
         ]
       }
     },
+    "/v1/tickets/{ticketId}": {
+      "get": {
+        "operationId": "Api_GetTicket",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetTicketResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "ticketId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Api"
+        ]
+      }
+    },
     "/v1/users": {
       "get": {
         "operationId": "Api_GetUser",
@@ -497,6 +527,17 @@
           "items": {
             "$ref": "#/definitions/v1Ticket"
           }
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1GetTicketResponse": {
+      "type": "object",
+      "properties": {
+        "ticket": {
+          "$ref": "#/definitions/v1Ticket"
         },
         "message": {
           "type": "string"

@@ -150,6 +150,38 @@ message FilterTicketsResponse {
   string message = 2;
 }
 
+message GetTicketRequest { string ticket_id = 1; }
+
+message GetTicketResponse {
+  Ticket ticket = 1;
+  string message = 2;
+}
+
+message UpdateTicketRequest {
+  message UpdateTicketRequestBody {
+    string user_id = 1;
+    string topic = 2;
+    string repo = 3;
+    string status_info = 4;
+    string summary = 5;
+    repeated string languages = 6;
+    repeated string technologies = 7;
+    repeated string yt_channels = 8;
+    repeated string resources = 9;
+    repeated string sources = 10;
+    repeated string docs = 11;
+  }
+  string ticket_id = 1;
+  UpdateTicketRequestBody body = 2;
+  google.protobuf.FieldMask update_mask = 3
+      [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
+message UpdateTicketResponse {
+  Ticket ticket = 1;
+  string message = 2;
+}
+
 service Api {
   rpc CreateAccount(CreateAccountRequest) returns (CreateAccountResponse) {
     option (google.api.http) = {
@@ -188,6 +220,11 @@ service Api {
   rpc FilterTickets(FilterTicketsRequest) returns (FilterTicketsResponse) {
     option (google.api.http) = {
       get : "/v1/tickets/filter",
+    };
+  }
+  rpc GetTicket(GetTicketRequest) returns (GetTicketResponse) {
+    option (google.api.http) = {
+      get : "/v1/tickets/{ticket_id}",
     };
   }
 }
