@@ -16,6 +16,38 @@
     "application/json"
   ],
   "paths": {
+    "/v1/login": {
+      "post": {
+        "operationId": "Api_Login",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1LoginResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1LoginRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Api"
+        ]
+      }
+    },
     "/v1/register": {
       "post": {
         "operationId": "Api_CreateAccount",
@@ -745,6 +777,28 @@
           "items": {
             "$ref": "#/definitions/v1Ticket"
           }
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1LoginRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "v1LoginResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/v1User"
         },
         "message": {
           "type": "string"
