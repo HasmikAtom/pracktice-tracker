@@ -8,6 +8,7 @@ require (
 	github.com/jackc/pgx/v4 v4.11.0
 	github.com/lib/pq v1.10.2 // indirect
 	github.com/soheilhy/cmux v0.1.4
+	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
 	google.golang.org/genproto v0.0.0-20210617175327-b9e0b3197ced
 	google.golang.org/grpc v1.39.0
 	google.golang.org/grpc/examples v0.0.0-20210708170655-30dfb4b933a5 // indirect
