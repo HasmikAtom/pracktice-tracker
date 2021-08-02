@@ -248,7 +248,63 @@ func (s *ApiServer) Login(ctx context.Context, req *api.LoginRequest) (*api.Logi
 }
 
 func (s *ApiServer) GetUser(ctx context.Context, req *empty.Empty) (*api.GetUserResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "not implemented")
+	userID := ctx.Value(user)
+
+	tx, err := s.db.conn.BeginTx(ctx, pgx.TxOptions{})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to retrieve user: %v", err)
+	}
+	defer tx.Rollback(ctx)
+
+	row := tx.QueryRow(ctx, `
+		SELECT id, email, user_type, activated_at, email_verified, first_name, last_name, auth_method, created_at, deleted_at
+		FROM users
+		WHERE id = $1
+	`, userID)
+	var (
+		user         api.User
+		dbAuthMethod sql.NullString
+		activatedAt  sql.NullTime
+		created      time.Time
+		deleted      sql.NullTime
+	)
+	err = row.Scan(
+		&user.Id,
+		&user.Email,
+		&user.UserType,
+		&activatedAt,
+		&user.EmailVerified,
+		&user.FirstName,
+		&user.LastName,
+		&dbAuthMethod,
+		&created,
+		&deleted,
+	)
+	if err != nil {
+		if err != pgx.ErrNoRows {
+			return nil, status.Errorf(codes.InvalidArgument, "user not found")
+		}
+		return nil, status.Errorf(codes.Internal, "failed to retrieve user")
+	}
+
+	if dbAuthMethod.Valid {
+		user.AuthMethod = dbAuthMethod.String
+	}
+	if activatedAt.Valid {
+		user.ActivatedAt = timestamppb.New(activatedAt.Time.Truncate(60 * time.Second))
+	}
+	if user.CreatedAt = timestamppb.New(created.Truncate(60 * time.Second)); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to retrieve user: %v", err)
+	}
+	if deleted.Valid {
+		user.DeletedAt = timestamppb.New(deleted.Time.Truncate(60 * time.Second))
+	}
+
+	if err = tx.Commit(ctx); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to retrieve user: %v", err)
+	}
+
+	return &api.GetUserResponse{User: &user, Message: fmt.Sprintf("user %s retrieved", user.Email)}, nil
 }
 
 func (s *ApiServer) UpdateUser(ctx context.Context, req *api.UpdateUserRequest) (*api.UpdateUserResponse, error) {
