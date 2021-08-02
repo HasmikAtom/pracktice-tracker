@@ -176,7 +176,75 @@ func (s *ApiServer) CreateAccount(ctx context.Context, req *api.CreateAccountReq
 }
 
 func (s *ApiServer) Login(ctx context.Context, req *api.LoginRequest) (*api.LoginResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "not implemented")
+	if req.Email == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "email is required")
+	}
+	if req.Password == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "password is required")
+	}
+
+	tx, err := s.db.conn.BeginTx(ctx, pgx.TxOptions{})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to login: %v", err)
+	}
+	defer tx.Rollback(ctx)
+
+	row := tx.QueryRow(ctx, `
+		SELECT id, email, password, user_type, activated_at, email_verified, first_name, last_name, auth_method, created_at, deleted_at
+		FROM users
+		WHERE email = $1
+	`, req.Email)
+	var (
+		user         api.User
+		password     string
+		dbAuthMethod sql.NullString
+		activatedAt  sql.NullTime
+		created      time.Time
+		deleted      sql.NullTime
+	)
+	err = row.Scan(
+		&user.Id,
+		&user.Email,
+		&password,
+		&user.UserType,
+		&activatedAt,
+		&user.EmailVerified,
+		&user.FirstName,
+		&user.LastName,
+		&dbAuthMethod,
+		&created,
+		&deleted,
+	)
+	if err != nil {
+		if err != pgx.ErrNoRows {
+			return nil, status.Errorf(codes.InvalidArgument, "user not found")
+		}
+		return nil, status.Errorf(codes.Internal, "failed to login")
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(password), []byte(req.Password))
+	if err != nil {
+		return nil, status.Errorf(codes.NotFound, "email and password don't match")
+	}
+
+	if dbAuthMethod.Valid {
+		user.AuthMethod = dbAuthMethod.String
+	}
+	if activatedAt.Valid {
+		user.ActivatedAt = timestamppb.New(activatedAt.Time.Truncate(60 * time.Second))
+	}
+	if user.CreatedAt = timestamppb.New(created.Truncate(60 * time.Second)); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to login: %v", err)
+	}
+	if deleted.Valid {
+		user.DeletedAt = timestamppb.New(deleted.Time.Truncate(60 * time.Second))
+	}
+
+	if err = tx.Commit(ctx); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to login: %v", err)
+	}
+
+	return &api.LoginResponse{User: &user, Message: fmt.Sprintf("user %s successfully logged in", user.Email)}, nil
 }
 
 func (s *ApiServer) GetUser(ctx context.Context, req *empty.Empty) (*api.GetUserResponse, error) {
