@@ -338,3 +338,7 @@ func (s *ApiServer) UpdateTicket(ctx context.Context, req *api.UpdateTicketReque
 func (s *ApiServer) DeleteTicket(ctx context.Context, req *api.DeleteTicketRequest) (*api.DeleteTicketResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "not implemented")
 }
+
+func (s *ApiServer) CreateGroup(ctx context.Context, req *api.CreateGroupRequest) (*api.CreateGroupResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "not implemented")
+}

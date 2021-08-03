@@ -30,6 +30,7 @@ type ApiClient interface {
 	GetTicket(ctx context.Context, in *GetTicketRequest, opts ...grpc.CallOption) (*GetTicketResponse, error)
 	UpdateTicket(ctx context.Context, in *UpdateTicketRequest, opts ...grpc.CallOption) (*UpdateTicketResponse, error)
 	DeleteTicket(ctx context.Context, in *DeleteTicketRequest, opts ...grpc.CallOption) (*DeleteTicketResponse, error)
+	CreateGroup(ctx context.Context, in *CreateGroupRequest, opts ...grpc.CallOption) (*CreateGroupResponse, error)
 }
 
 type apiClient struct {
@@ -139,6 +140,15 @@ func (c *apiClient) DeleteTicket(ctx context.Context, in *DeleteTicketRequest, o
 	return out, nil
 }
 
+func (c *apiClient) CreateGroup(ctx context.Context, in *CreateGroupRequest, opts ...grpc.CallOption) (*CreateGroupResponse, error) {
+	out := new(CreateGroupResponse)
+	err := c.cc.Invoke(ctx, "/tracker.v1.Api/CreateGroup", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiServer is the server API for Api service.
 // All implementations should embed UnimplementedApiServer
 // for forward compatibility
@@ -154,6 +164,7 @@ type ApiServer interface {
 	GetTicket(context.Context, *GetTicketRequest) (*GetTicketResponse, error)
 	UpdateTicket(context.Context, *UpdateTicketRequest) (*UpdateTicketResponse, error)
 	DeleteTicket(context.Context, *DeleteTicketRequest) (*DeleteTicketResponse, error)
+	CreateGroup(context.Context, *CreateGroupRequest) (*CreateGroupResponse, error)
 }
 
 // UnimplementedApiServer should be embedded to have forward compatible implementations.
@@ -192,6 +203,9 @@ func (UnimplementedApiServer) UpdateTicket(context.Context, *UpdateTicketRequest
 }
 func (UnimplementedApiServer) DeleteTicket(context.Context, *DeleteTicketRequest) (*DeleteTicketResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteTicket not implemented")
+}
+func (UnimplementedApiServer) CreateGroup(context.Context, *CreateGroupRequest) (*CreateGroupResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateGroup not implemented")
 }
 
 // UnsafeApiServer may be embedded to opt out of forward compatibility for this service.
@@ -403,6 +417,24 @@ func _Api_DeleteTicket_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Api_CreateGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateGroupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServer).CreateGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/tracker.v1.Api/CreateGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServer).CreateGroup(ctx, req.(*CreateGroupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Api_ServiceDesc is the grpc.ServiceDesc for Api service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -453,6 +485,10 @@ var Api_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteTicket",
 			Handler:    _Api_DeleteTicket_Handler,
+		},
+		{
+			MethodName: "CreateGroup",
+			Handler:    _Api_CreateGroup_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

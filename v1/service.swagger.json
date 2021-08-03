@@ -16,6 +16,38 @@
     "application/json"
   ],
   "paths": {
+    "/v1/groups": {
+      "post": {
+        "operationId": "Api_CreateGroup",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateGroupResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateGroupRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Api"
+        ]
+      }
+    },
     "/v1/login": {
       "post": {
         "operationId": "Api_Login",
@@ -650,6 +682,28 @@
         }
       }
     },
+    "v1CreateGroupRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "v1CreateGroupResponse": {
+      "type": "object",
+      "properties": {
+        "group": {
+          "$ref": "#/definitions/v1Group"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
     "v1CreateTicketRequest": {
       "type": "object",
       "properties": {
@@ -766,6 +820,31 @@
         },
         "message": {
           "type": "string"
+        }
+      }
+    },
+    "v1Group": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deletedAt": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
