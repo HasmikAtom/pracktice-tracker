@@ -340,5 +340,65 @@ func (s *ApiServer) DeleteTicket(ctx context.Context, req *api.DeleteTicketReque
 }
 
 func (s *ApiServer) CreateGroup(ctx context.Context, req *api.CreateGroupRequest) (*api.CreateGroupResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "not implemented")
+	userID := ctx.Value(user)
+	if req.Name == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "name is required")
+	}
+
+	tx, err := s.db.conn.BeginTx(ctx, pgx.TxOptions{})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to create group: %v", err)
+	}
+	defer tx.Rollback(ctx)
+
+	row := tx.QueryRow(ctx, `
+		INSERT INTO groups (user_id, group_name, descript)
+		VALUES ($1, $2, $3)
+		RETURNING id, user_id, group_name, descript, created_at, deleted_at
+	`,
+		userID,
+		req.Name,
+		req.Description,
+	)
+	var (
+		group       api.Group
+		description sql.NullString
+		created     time.Time
+		deleted     sql.NullTime
+	)
+	err = row.Scan(
+		&group.Id,
+		&group.UserId,
+		&group.Name,
+		&description,
+		&created,
+		&deleted,
+	)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to create group: %v", err)
+	}
+	if description.Valid {
+		group.Description = description.String
+	}
+	if group.CreatedAt = timestamppb.New(created.Truncate(60 * time.Second)); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to create group: %v", err)
+	}
+	if deleted.Valid {
+		group.DeletedAt = timestamppb.New(deleted.Time.Truncate(60 * time.Second))
+	}
+
+	row = tx.QueryRow(ctx, `
+		INSERT INTO group_users (group_id, user_id, permission)
+		VALUES ($1, $2, $3)
+	`, group.Id, group.UserId, "admin")
+
+	err = row.Scan()
+	if err != pgx.ErrNoRows {
+		return nil, status.Errorf(codes.Internal, "failed to create group: %v", err)
+	}
+
+	if err = tx.Commit(ctx); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to create group: %v", err)
+	}
+	return &api.CreateGroupResponse{Group: &group, Message: fmt.Sprintf("group %s created", group.Name)}, nil
 }
