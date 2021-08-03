@@ -402,3 +402,7 @@ func (s *ApiServer) CreateGroup(ctx context.Context, req *api.CreateGroupRequest
 	}
 	return &api.CreateGroupResponse{Group: &group, Message: fmt.Sprintf("group %s created", group.Name)}, nil
 }
+
+func (s *ApiServer) GetGroup(ctx context.Context, req *api.GetGroupRequest) (*api.GetGroupResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "not implemented")
+}

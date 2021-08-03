@@ -218,6 +218,13 @@ message CreateGroupResponse {
   string message = 2;
 }
 
+message GetGroupRequest { string group_id = 1; }
+
+message GetGroupResponse {
+  Group group = 1;
+  string message = 2;
+}
+
 service Api {
   rpc CreateAccount(CreateAccountRequest) returns (CreateAccountResponse) {
     option (google.api.http) = {
@@ -285,6 +292,11 @@ service Api {
     option (google.api.http) = {
       post : "/v1/groups",
       body : "*"
+    };
+  }
+  rpc GetGroup(GetGroupRequest) returns (GetGroupResponse) {
+    option (google.api.http) = {
+      get : "/v1/groups/{group_id}",
     };
   }
 }

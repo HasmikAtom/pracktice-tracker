@@ -48,6 +48,36 @@
         ]
       }
     },
+    "/v1/groups/{groupId}": {
+      "get": {
+        "operationId": "Api_GetGroup",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetGroupResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "groupId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Api"
+        ]
+      }
+    },
     "/v1/login": {
       "post": {
         "operationId": "Api_Login",
@@ -795,6 +825,17 @@
           "items": {
             "$ref": "#/definitions/v1Ticket"
           }
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1GetGroupResponse": {
+      "type": "object",
+      "properties": {
+        "group": {
+          "$ref": "#/definitions/v1Group"
         },
         "message": {
           "type": "string"
