@@ -461,5 +461,58 @@ func (s *ApiServer) GetGroup(ctx context.Context, req *api.GetGroupRequest) (*ap
 }
 
 func (s *ApiServer) ListGroups(ctx context.Context, req *empty.Empty) (*api.ListGroupsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "not implemented")
+	userID := ctx.Value(user)
+
+	tx, err := s.db.conn.BeginTx(ctx, pgx.TxOptions{})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to retrieve groups: %v", err)
+	}
+	defer tx.Rollback(ctx)
+
+	rows, err := tx.Query(ctx, `
+		SELECT groups.id, groups.user_id, groups.group_name, groups.descript, groups.created_at, groups.deleted_at
+		FROM groups
+		JOIN group_users ON groups.id = group_users.group_id
+		WHERE group_users.user_id = $1
+	`, userID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to retrieve groups: %v", err)
+	}
+	defer rows.Close()
+	var groups []*api.Group
+	for rows.Next() {
+
+		var (
+			group       api.Group
+			description sql.NullString
+			created     time.Time
+			deleted     sql.NullTime
+		)
+		err = rows.Scan(
+			&group.Id,
+			&group.UserId,
+			&group.Name,
+			&description,
+			&created,
+			&deleted,
+		)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to retrieve groups: %v", err)
+		}
+		if description.Valid {
+			group.Description = description.String
+		}
+		if group.CreatedAt = timestamppb.New(created.Truncate(60 * time.Second)); err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to retrieve groups: %v", err)
+		}
+		if deleted.Valid {
+			group.DeletedAt = timestamppb.New(deleted.Time.Truncate(60 * time.Second))
+		}
+		groups = append(groups, &group)
+	}
+
+	if err = tx.Commit(ctx); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to retrieve groups: %v", err)
+	}
+	return &api.ListGroupsResponse{Groups: groups, Message: "groups retrieved"}, nil
 }
