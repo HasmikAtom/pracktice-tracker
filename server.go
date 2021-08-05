@@ -459,3 +459,7 @@ func (s *ApiServer) GetGroup(ctx context.Context, req *api.GetGroupRequest) (*ap
 
 	return &api.GetGroupResponse{Group: &group, Message: fmt.Sprintf("group %s retrieved", group.Name)}, nil
 }
+
+func (s *ApiServer) ListGroups(ctx context.Context, req *empty.Empty) (*api.ListGroupsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "not implemented")
+}

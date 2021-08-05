@@ -17,6 +17,26 @@
   ],
   "paths": {
     "/v1/groups": {
+      "get": {
+        "operationId": "Api_ListGroups",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListGroupsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "Api"
+        ]
+      },
       "post": {
         "operationId": "Api_CreateGroup",
         "responses": {
@@ -886,6 +906,20 @@
         "deletedAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "v1ListGroupsResponse": {
+      "type": "object",
+      "properties": {
+        "groups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1Group"
+          }
+        },
+        "message": {
+          "type": "string"
         }
       }
     },

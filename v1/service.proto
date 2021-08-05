@@ -225,6 +225,11 @@ message GetGroupResponse {
   string message = 2;
 }
 
+message ListGroupsResponse {
+  repeated Group groups = 1;
+  string message = 2;
+}
+
 service Api {
   rpc CreateAccount(CreateAccountRequest) returns (CreateAccountResponse) {
     option (google.api.http) = {
@@ -297,6 +302,11 @@ service Api {
   rpc GetGroup(GetGroupRequest) returns (GetGroupResponse) {
     option (google.api.http) = {
       get : "/v1/groups/{group_id}",
+    };
+  }
+  rpc ListGroups(google.protobuf.Empty) returns (ListGroupsResponse) {
+    option (google.api.http) = {
+      get : "/v1/groups",
     };
   }
 }
